@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>조직문화 팀별 보고서</title>
+  <style>
+    body {
+      font-family: "Segoe UI", "Noto Sans KR", sans-serif;
+      padding: 40px;
+      background-color: #f9f9fb;
+      color: #2c2c2c;
+      line-height: 1.75;
+    }
+    h1 { text-align: center; font-size: 2.4em; margin-bottom: 40px; }
+    h2 {
+      font-size: 1.6em;
+      color: #2e3b4e;
+      border-left: 6px solid #4CAF50;
+      padding-left: 12px;
+      margin-top: 60px;
+    }
+    h4 { font-size: 1.1em; margin-top: 32px; margin-bottom: 12px; }
+    .section {
+      background: #fff;
+      padding: 30px;
+      margin-bottom: 60px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    .metrics {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-top: 20px;
+    }
+    .metric {
+      flex: 1 1 calc(30% - 16px);
+      background: rgba(255,255,255,0.5);
+      padding: 16px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      text-align: center;
+      border: 1px solid #eee;
+    }
+    .metric .title { font-weight: 500; color: #444; }
+    .metric .value { font-size: 1.4em; font-weight: bold; color: #2e7d32; }
+    .highlight { background: rgba(212,244,221,0.5); border: 2px solid #4caf50; }
+    img {
+      display: block;
+      margin: 16px auto;
+      max-width: 90%;
+      border-radius: 8px;
+    }
+    ul { padding-left: 20px; }
+    li { margin-bottom: 8px; }
+    hr { margin: 40px 0; border: none; border-top: 1px solid #ddd; }
+  </style>
+</head>
+<body>
+  <h1>📊 조직문화 팀별 종합 보고서</h1>
+
+  {% for team in results %}
+  <div class="section">
+    <h2>{{ team.부서 }} - {{ team.팀 }}</h2>
+
+    <div class="metrics">
+      {% for item in team.지표 %}
+        {% if 'Top' not in item.이름 %}
+        <div class="metric {{ 'highlight' if item.강조 else '' }}">
+          <div class="title">{{ item.이름.replace('score_', '') }}</div>
+          <div class="value">{{ item.값 }}</div>
+          <img src="../static/{{ team.팀 }}/{{ item.이름 }}_gauge.png" width="250">
+        </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    <h4>📈 팀별 점수 분포</h4>
+    <img src="../static/{{ team.팀 }}/{{ team.팀 }}_점수형_분포.png" width="600">
+
+    {% if select_prefixes %}
+      {% for prefix in select_prefixes %}
+        <h4>🥇 {{ prefix }} Top3 응답 항목</h4>
+        <img src="../static/{{ team.팀 }}/{{ prefix }}_Top3.png" width="400">
+      {% endfor %}
+    {% endif %}
+
+    {% if team.기타의견 %}
+      <h4>💬 구성원 기타 의견</h4>
+      <ul>
+        {% for comment in team.기타의견 %}
+          <li>“{{ comment }}”</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    <hr>
+  </div>
+  {% endfor %}
+</body>
+</html>
